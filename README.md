@@ -1,13 +1,11 @@
 # Tully-Fisher Relation and Peculiar Velocity Analysis
 
-This repository contains tools for simultaneously analyzing galaxy peculiar velocities and Tully-Fisher relations using Bayesian MCMC methods with `emcee`.
-
 ## Overview
 
-The Tully-Fisher relation is a tight correlation between galaxy luminosity and rotation velocity, making it useful as a distance indicator. This code allows you to:
+The Tully-Fisher relation is a correlation between galaxy luminosity and rotation velocity, making it useful as a distance indicator. This code allows you to:
 
-- Fit various Tully-Fisher relation models (linear, curved, parabolic)
-- Include peculiar velocity corrections and fit flow models to the data
+- Fit various Tully-Fisher relation models (linear, curved)
+- Include peculiar velocity corrections and fit flow models
 - Handle selection effects
 - Perform Bayesian parameter estimation with MCMC
 
@@ -95,7 +93,7 @@ data = analysis.prepare_data(
     ra=ra, dec=dec, z=redshift,
     log_w=log_width, m=magnitude,
     xerr=w_errors, yerr=m_errors,
-    pv_field=pv_values  # Peculiar velocity field from model
+    pv_field=pv_field  # PV field from pvhub
 )
 ```
 
@@ -128,8 +126,8 @@ The number of parameters depends on your model choice:
 - `a₂`: Curvature term (curved/parabolic models)
 - `ε₀`: Intrinsic scatter (zero-point)
 - `ε₁`: Scatter slope (linear scatter model)
-- `β`: Peculiar velocity linear scaling parameter (PV models)
-- `vₓ, vᵧ, vᵤ`: External bulk flow components (PV models) (km/s)
+- `β`: Peculiar velocity coupling (PV models)
+- `vₓ, vᵧ, vᵤ`: External bulk flow components (PV models)
 
 ## Data Format
 
@@ -139,29 +137,100 @@ Your data should include:
 - `z`: Heliocentric redshift
 - `log_w`: Log₁₀ of integrated HI line width (km/s)
 - `m`: Apparent magnitude in your chosen band
-- `xerr`, `yerr`: Measurement uncertainties in `log_w` and `m`, respectively
-- `pv_field`: Peculiar velocity field values (if using PV modeling) (km/s)
+- `xerr`, `yerr`: Measurement uncertainties
+- `pv_field`: Peculiar velocity field values (if using PV modeling)
+
+## Peculiar Velocity Field Setup
+
+If you want to include peculiar velocity corrections in your analysis, you'll need to set up pvhub:
+
+### Installing pvhub
+
+```bash
+# Install directly from GitHub
+pip install git+https://github.com/KSaid-1/pvhub.git
+
+# Or clone and install locally
+git clone https://github.com/KSaid-1/pvhub.git
+cd pvhub
+pip install -e .
+```
+
+### Available PV Models
+
+pvhub provides access to several peculiar velocity field reconstructions:
+
+```python
+from pvhub import pvhub
+
+pvhub.choose_model(3)  # Select 2M++ model
+
+# Calculate PV field for your galaxy sample
+pv_field = pvhub.calculate_pv(ra_deg, dec_deg, redshift)
+```
+
+### PV Field Integration
+
+The code automatically handles the normalization using Carrick et al. parameters:
+
+```python
+# The prepare_data method automatically:
+# 1. Converts coordinates to supergalactic frame
+# 2. Applies Carrick et al. external velocity correction  
+# 3. Normalizes using β_Carrick = 0.43
+
+data = analysis.prepare_data(
+    ra=ra, dec=dec, z=z,
+    log_w=log_w, m=m, 
+    xerr=xerr, yerr=yerr,
+    pv_field=pv_field  # Raw pvhub output
+)
+```
 
 ## Advanced Features
 
 ### Selection Effects
 
-To account for magnitude-limited surveys:
+The code includes sophisticated selection function modeling to account for magnitude-limited surveys:
+
+#### Simple Magnitude Cut
+
+For a basic magnitude limit:
 
 ```python
-# Magnitude selection bias correction
-selection_params = [m1, m2, a]  # Selection function parameters
-results = run_mcmc_analysis(analysis, data, selection=selection_params)
+# Simple cut at m_lim = 16.0
+selection = [16.0]
+
+results = run_mcmc_analysis(
+    analysis, data, 
+    selection=selection,  # Apply selection correction
+    n_walkers=32, n_steps=5000
+)
 ```
 
-### Custom Cosmology
+#### Complex Selection Function
+
+For surveys with gradual selection effects:
 
 ```python
-from astropy.cosmology import FlatLambdaCDM
+# SDSS-like selection function
+# F(m) = 1 for m <= m1, with smooth transition for m > m1
+selection = [13.0, 13.8, -0.11]  # [m1, m2, a]
 
-custom_cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
-analysis = TullyFisherAnalysis(cosmology=custom_cosmo)
+# WISE-like selection
+selection = [12.0, 13.5, -0.10]  # [m1, m2, a]
+
+results = run_mcmc_analysis(analysis, data, selection=selection)
 ```
+
+The selection function has the form:
+- `F(m) = 1` for `m ≤ m₁` (complete sample)  
+- `F(m) = 1 + (10^(a(m-m₂)² - a(m₁-m₂)² - 0.6(m-m₁)) - 1)` for `m > m₁`
+
+Where:
+- `m₁`: Bright magnitude limit (complete sample)
+- `m₂`: Transition magnitude 
+- `a`: Selection steepness parameter
 
 ## Output Analysis
 
@@ -208,4 +277,3 @@ max_log_like = results['lnprob'].max()
 bic = -2 * max_log_like + n_params * np.log(n_data)
 print(f"BIC: {bic:.2f}")
 ```
-
