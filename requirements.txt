@@ -5,6 +5,11 @@ astropy>=4.0.0
 emcee>=3.0.0
 matplotlib>=3.3.0
 
+# Data handling and I/O
+pandas>=1.3.0
+h5py>=3.1.0
+tables>=3.6.0          # For HDF5 support
+
 # Optional dependencies for enhanced functionality
 healpy>=1.15.0          # For HEALPix operations
 corner>=2.2.0           # For corner plots
@@ -16,5 +21,8 @@ pytest>=6.0.0          # For running tests
 flake8>=4.0.0          # For code linting
 black>=22.0.0          # For code formatting
 
-# Peculiar velocity modeling (optional)
-# pvhub                 # Uncomment if using PV field calculations
+# Mock data generation dependencies
+# pvhub - for peculiar velocity field calculations
+# Install from GitHub: pip install git+https://github.com/KSaid-1/pvhub.git
+
+# Note: helio_cmb should be included as a local module in your repository
