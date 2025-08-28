@@ -1,13 +1,22 @@
-# Tully-Fisher Relation and Peculiar Velocity Analysis
+# Simultaneously fitting the Tully-Fisher relation and peculiar velocity models
 
 ## Overview
 
-The Tully-Fisher relation is a correlation between galaxy luminosity and rotation velocity, making it useful as a distance indicator. This code allows you to:
+This code allows you to:
 
-- Fit various Tully-Fisher relation models (linear, curved)
-- Include peculiar velocity corrections and fit flow models
-- Handle selection effects
+- Fit various types of Tully-Fisher relations (linear, curved) and models for intrinsic scatter 
+- Fit peculiar velocity models
+- Handle magnitude selection effects
 - Perform Bayesian parameter estimation with MCMC
+- Constrain dipole and/or quadrupole Tully-Fisher zeropoint anisotropies
+- Compare goodness-of-fits between models
+
+Examples are demonstrated on the [Cosmicflows-4 Tully Fisher data](https://ui.adsabs.harvard.edu/abs/2020ApJ...902..145K/abstract).
+
+For background, derivations, and details see:
+- [Boubel et al. 2024a](https://ui.adsabs.harvard.edu/abs/2024MNRAS.531...84B/abstract)
+- [Boubel et al. 2024b](https://ui.adsabs.harvard.edu/abs/2024MNRAS.533.1550B/abstract)
+- [Boubel et al. 2025](https://ui.adsabs.harvard.edu/abs/2025JCAP...03..066B/abstract)
 
 ## Installation
 
