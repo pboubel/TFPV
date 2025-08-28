@@ -7,7 +7,7 @@ This module handles magnitude selection effects in galaxy surveys, including:
 - Visualization tools
 - Survey-specific presets
 
-Author: [Your Name]
+Author: Paula Boubel
 """
 
 import numpy as np
