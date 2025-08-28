@@ -1,0 +1,20 @@
+# Core dependencies
+numpy>=1.20.0
+scipy>=1.7.0
+astropy>=4.0.0
+emcee>=3.0.0
+matplotlib>=3.3.0
+
+# Optional dependencies for enhanced functionality
+healpy>=1.15.0          # For HEALPix operations
+corner>=2.2.0           # For corner plots
+jupyter>=1.0.0          # For notebook examples
+tqdm>=4.60.0           # For progress bars
+
+# Development dependencies (optional)
+pytest>=6.0.0          # For running tests
+flake8>=4.0.0          # For code linting
+black>=22.0.0          # For code formatting
+
+# Peculiar velocity modeling (optional)
+# pvhub                 # Uncomment if using PV field calculations
