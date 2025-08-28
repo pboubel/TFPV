@@ -143,27 +143,12 @@ The number of parameters depends on your model choice:
 Your data should include:
 
 - `ra`, `dec`: Coordinates in degrees (J2000)
-- `z`: Heliocentric redshift
+- `z`: CMB-frame redshift
 - `log_w`: Log₁₀ of integrated HI line width (km/s)
 - `m`: Apparent magnitude in your chosen band
 - `xerr`, `yerr`: Measurement uncertainties
 - `pv_field`: Peculiar velocity field values (if using PV modeling)
 
-## Peculiar Velocity Field Setup
-
-If you want to include peculiar velocity corrections in your analysis, you'll need to set up pvhub:
-
-### Installing pvhub
-
-```bash
-# Install directly from GitHub
-pip install git+https://github.com/KSaid-1/pvhub.git
-
-# Or clone and install locally
-git clone https://github.com/KSaid-1/pvhub.git
-cd pvhub
-pip install -e .
-```
 
 ### Available PV Models
 
@@ -200,7 +185,7 @@ data = analysis.prepare_data(
 
 ### Selection Effects
 
-The code includes sophisticated selection function modeling to account for magnitude-limited surveys:
+The code includes selection function modeling to account for magnitude-limited surveys:
 
 #### Simple Magnitude Cut
 
